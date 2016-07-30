@@ -3,12 +3,13 @@
 #include <math.h>
 #include <stdlib.h>
 
-#ifdef WIN32
+//<math.h> use
+//#ifdef WIN32
 //float log2(float x)
 //{
 //	return log(x)/log(2.0f);
 //}
-#endif
+//#endif
 
 box float_to_box(float *f)
 {
