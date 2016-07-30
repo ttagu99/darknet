@@ -13,7 +13,12 @@ convnet/
 decaf/
 submission/
 cfg/
+Public/
+Private/
 darknet
+debug/
+release/
+models/
 
 # OS Generated #
 .DS_Store*
@@ -21,3 +26,8 @@ ehthumbs.db
 Icon?
 Thumbs.db
 *.swp
+*.deps
+*.sdf
+*.suo
+*.pdb
+*.user
