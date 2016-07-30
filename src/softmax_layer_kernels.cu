@@ -2,11 +2,11 @@
 #include "curand.h"
 #include "cublas_v2.h"
 
-extern "C" {
+// {
 #include "softmax_layer.h"
 #include "cuda.h"
 #include "blas.h"
-}
+//}
 
 __global__ void forward_softmax_layer_kernel(int n, int batch, float *input, float temp, float *output)
 {
@@ -29,12 +29,12 @@ __global__ void forward_softmax_layer_kernel(int n, int batch, float *input, flo
     }
 }
 
-extern "C" void pull_softmax_layer_output(const softmax_layer layer)
+ void pull_softmax_layer_output(const softmax_layer layer)
 {
     cuda_pull_array(layer.output_gpu, layer.output, layer.inputs*layer.batch);
 }
 
-extern "C" void forward_softmax_layer_gpu(const softmax_layer layer, network_state state)
+ void forward_softmax_layer_gpu(const softmax_layer layer, network_state state)
 {
     int inputs = layer.inputs / layer.groups;
     int batch = layer.batch * layer.groups;
@@ -42,7 +42,7 @@ extern "C" void forward_softmax_layer_gpu(const softmax_layer layer, network_sta
     check_error(cudaPeekAtLastError());
 }
 
-extern "C" void backward_softmax_layer_gpu(const softmax_layer layer, network_state state)
+ void backward_softmax_layer_gpu(const softmax_layer layer, network_state state)
 {
     axpy_ongpu(layer.batch*layer.inputs, 1, layer.delta_gpu, 1, state.delta, 1);
 }

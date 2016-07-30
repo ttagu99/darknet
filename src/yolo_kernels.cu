@@ -2,7 +2,7 @@
 #include "curand.h"
 #include "cublas_v2.h"
 
-extern "C" {
+//extern "C" {
 #include "network.h"
 #include "detection_layer.h"
 #include "cost_layer.h"
@@ -10,17 +10,23 @@ extern "C" {
 #include "parser.h"
 #include "box.h"
 #include "image.h"
-#include <sys/time.h>
-}
+//}
 
-#ifdef OPENCV
+#ifdef OPENCV   
+
+#ifdef WIN32
+#include "HighResolutionTimer.h"
+#else
+#include <sys/time.h>
+#endif
+
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
-extern "C" image ipl_to_image(IplImage* src);
-extern "C" void convert_yolo_detections(float *predictions, int classes, int num, int square, int side, int w, int h, float thresh, float **probs, box *boxes, int only_objectness);
+image ipl_to_image(IplImage* src);
+void convert_yolo_detections(float *predictions, int classes, int num, int square, int side, int w, int h, float thresh, float **probs, box *boxes, int only_objectness);
 
-extern "C" char *voc_names[];
-extern "C" image voc_labels[];
+char *voc_names[];
+image voc_labels[];
 
 static float **probs;
 static box *boxes;
@@ -34,7 +40,7 @@ static cv::VideoCapture cap;
 static float fps = 0;
 static float demo_thresh = 0;
 
-void *fetch_in_thread(void *ptr)
+void *fetch_in_thread_demo(void *ptr)
 {
     cv::Mat frame_m;
     cap >> frame_m;
@@ -45,7 +51,7 @@ void *fetch_in_thread(void *ptr)
     return 0;
 }
 
-void *detect_in_thread(void *ptr)
+void *detect_in_thread_demo(void *ptr)
 {
     float nms = .4;
 
@@ -63,7 +69,7 @@ void *detect_in_thread(void *ptr)
     return 0;
 }
 
-extern "C" void demo_yolo(char *cfgfile, char *weightfile, float thresh, int cam_index)
+ void demo_yolo(char *cfgfile, char *weightfile, float thresh, int cam_index)
 {
     demo_thresh = thresh;
     printf("YOLO demo\n");
@@ -89,25 +95,26 @@ extern "C" void demo_yolo(char *cfgfile, char *weightfile, float thresh, int cam
     pthread_t fetch_thread;
     pthread_t detect_thread;
 
-    fetch_in_thread(0);
+    fetch_in_thread_demo(0);
     det = in;
     det_s = in_s;
 
-    fetch_in_thread(0);
-    detect_in_thread(0);
+    fetch_in_thread_demo(0);
+    detect_in_thread_demo(0);
     disp = det;
     det = in;
     det_s = in_s;
 
-    cvNamedWindow("YOLO", CV_WINDOW_NORMAL); 
-    cvMoveWindow("YOLO", 0, 0);
-    cvResizeWindow("YOLO", 1352, 1013);
-
     while(1){
+#ifdef WIN32
+		Timer timer;
+		timer.Reset();
+#else
         struct timeval tval_before, tval_after, tval_result;
         gettimeofday(&tval_before, NULL);
-        if(pthread_create(&fetch_thread, 0, fetch_in_thread, 0)) error("Thread creation failed");
-        if(pthread_create(&detect_thread, 0, detect_in_thread, 0)) error("Thread creation failed");
+#endif
+        if(pthread_create(&fetch_thread, 0, fetch_in_thread_demo, 0)) error("Thread creation failed");
+        if(pthread_create(&detect_thread, 0, detect_in_thread_demo, 0)) error("Thread creation failed");
         show_image(disp, "YOLO");
         free_image(disp);
         cvWaitKey(1);
@@ -118,14 +125,18 @@ extern "C" void demo_yolo(char *cfgfile, char *weightfile, float thresh, int cam
         det   = in;
         det_s = in_s;
 
+#ifdef WIN32
+		float curr = 1000.0f / timer.Duration();
+#else
         gettimeofday(&tval_after, NULL);
         timersub(&tval_after, &tval_before, &tval_result);
         float curr = 1000000.f/((long int)tval_result.tv_usec);
+#endif
         fps = .9*fps + .1*curr;
     }
 }
 #else
-extern "C" void demo_yolo(char *cfgfile, char *weightfile, float thresh, int cam_index){
+ void demo_yolo(char *cfgfile, char *weightfile, float thresh, int cam_index){
     fprintf(stderr, "YOLO demo needs OpenCV for webcam images.\n");
 }
 #endif

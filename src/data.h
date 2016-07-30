@@ -8,16 +8,16 @@
 
 extern unsigned int data_seed;
 
-static inline float distance_from_edge(int x, int max)
-{
-    int dx = (max/2) - x;
-    if (dx < 0) dx = -dx;
-    dx = (max/2) + 1 - dx;
-    dx *= 2;
-    float dist = (float)dx/max;
-    if (dist > 1) dist = 1;
-    return dist;
-}
+//static  float distance_from_edge(int x, int max)
+//{
+//    int dx = (max/2) - x;
+//    if (dx < 0) dx = -dx;
+//    dx = (max/2) + 1 - dx;
+//    dx *= 2;
+//    float dist = (float)dx/max;
+//    if (dist > 1) dist = 1;
+//    return dist;
+//}
 
 typedef struct{
     int w, h;

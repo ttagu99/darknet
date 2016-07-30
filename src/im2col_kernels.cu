@@ -2,10 +2,10 @@
 #include "curand.h"
 #include "cublas_v2.h"
 
-extern "C" {
+//extern "C" {
 #include "im2col.h"
 #include "cuda.h"
-}
+//}
 
 // src: https://github.com/BVLC/caffe/blob/master/src/caffe/util/im2col.cu
 // You may also want to read: https://github.com/BVLC/caffe/blob/master/LICENSE
@@ -125,7 +125,7 @@ void im2col_ongpu(float *im,
    data_col[col_index] = val;
    }
 
-   extern "C" void im2col_ongpu(float *im,
+   void im2col_ongpu(float *im,
    int channels,  int height,  int width,
 int ksize,  int stride,  int pad, float *data_col)
 {

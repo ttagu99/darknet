@@ -88,7 +88,6 @@ struct layer{
     float object_scale;
     float noobject_scale;
     float class_scale;
-    int random;
 
     int dontload;
     int dontloadscales;

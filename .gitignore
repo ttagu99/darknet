@@ -31,3 +31,9 @@ Thumbs.db
 *.suo
 *.pdb
 *.user
+*.dll
+*.exe
+*.ilk
+*.lib
+*.exp
+*.opensdf

@@ -1,24 +1,12 @@
 #include "cuda_runtime.h"
 #include "curand.h"
 #include "cublas_v2.h"
-
-extern "C" {
-#include "activations.h"
 #include "cuda.h"
-}
 
+//extern "C" {
+#include "activations.h"
+//}
 
-__device__ float lhtan_activate_kernel(float x)
-{
-    if(x < 0) return .001*x;
-    if(x > 1) return .001*(x-1) + 1;
-    return x;
-}
-__device__ float lhtan_gradient_kernel(float x)
-{
-    if(x > 0 && x < 1) return 1;
-    return .001;
-}
 
 __device__ float hardtan_activate_kernel(float x)
 {
@@ -101,8 +89,6 @@ __device__ float activate_kernel(float x, ACTIVATION a)
             return stair_activate_kernel(x);
         case HARDTAN:
             return hardtan_activate_kernel(x);
-        case LHTAN:
-            return lhtan_activate_kernel(x);
     }
     return 0;
 }
@@ -134,8 +120,6 @@ __device__ float gradient_kernel(float x, ACTIVATION a)
             return stair_gradient_kernel(x);
         case HARDTAN:
             return hardtan_gradient_kernel(x);
-        case LHTAN:
-            return lhtan_gradient_kernel(x);
     }
     return 0;
 }
@@ -152,13 +136,13 @@ __global__ void gradient_array_kernel(float *x, int n, ACTIVATION a, float *delt
     if(i < n) delta[i] *= gradient_kernel(x[i], a);
 }
 
-extern "C" void activate_array_ongpu(float *x, int n, ACTIVATION a) 
+ void activate_array_ongpu(float *x, int n, ACTIVATION a) 
 {
     activate_array_kernel<<<cuda_gridsize(n), BLOCK>>>(x, n, a);
     check_error(cudaPeekAtLastError());
 }
 
-extern "C" void gradient_array_ongpu(float *x, int n, ACTIVATION a, float *delta) 
+ void gradient_array_ongpu(float *x, int n, ACTIVATION a, float *delta) 
 {
     gradient_array_kernel<<<cuda_gridsize(n), BLOCK>>>(x, n, a, delta);
     check_error(cudaPeekAtLastError());

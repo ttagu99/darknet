@@ -8,8 +8,14 @@ extern int gpu_index;
 #define BLOCK 512
 
 #include "cuda_runtime.h"
-#include "curand.h"
 #include "cublas_v2.h"
+#include "curand.h"
+
+
+#ifdef WIN32
+#include <float.h>
+#define INFINITY FLT_MAX 
+#endif
 
 #ifdef CUDNN
 #include "cudnn.h"
