@@ -11,6 +11,7 @@
 #ifdef OPENCV
 #include "opencv2/highgui/highgui_c.h"
 #include "opencv2/imgproc/imgproc_c.h"
+#include "opencv2\opencv.hpp"
 #endif
 
 typedef struct {
@@ -64,6 +65,8 @@ void show_image_collapsed(image p, char *name);
 void save_image_jpg(image p, char *name);
 image get_image_from_stream(CvCapture *cap);
 image ipl_to_image(IplImage* src);
+image mat_to_image(cv::Mat src);
+cv::Mat image_to_mat(image src);
 #endif
 
 void print_image(image m);

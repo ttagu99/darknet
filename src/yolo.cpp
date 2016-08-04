@@ -346,7 +346,7 @@ void test_yolo(char *cfgfile, char *weightfile, char *filename, float thresh)
         printf("%s: Predicted in %f seconds.\n", input, sec(clock()-time));
         convert_yolo_detections(predictions, l.classes, l.n, l.sqrt, l.side, 1, 1, thresh, probs, boxes, 0);
         if (nms) do_nms_sort(boxes, probs, l.side*l.side*l.n, l.classes, nms);
-        //draw_detections(im, l.side*l.side*l.n, thresh, boxes, probs, voc_names, voc_labels, 20);
+       // draw_detections(im, l.side*l.side*l.n, thresh, boxes, probs, voc_names, voc_labels, 20);
         draw_detections(im, l.side*l.side*l.n, thresh, boxes, probs, voc_names, 0, l.classes);
         save_image(im, "predictions");
         show_image(im, "predictions");
@@ -366,7 +366,7 @@ void demo_yolo(char *cfgfile, char *weightfile, float thresh, int cam_index, cha
 
 void run_yolo(int argc, char **argv)
 {
-    float thresh = find_float_arg(argc, argv, "-thresh", .2);
+	float thresh; 
     int cam_index = find_int_arg(argc, argv, "-c", 0);
     if(argc < 4){
         fprintf(stderr, "usage: %s %s [train/test/valid] [cfg] [weights (optional)]\n", argv[0], argv[1]);
@@ -376,15 +376,19 @@ void run_yolo(int argc, char **argv)
     char *cfg = argv[3];
     char *weights = (argc > 4) ? argv[4] : 0;
     char *filename = (argc > 5) ? argv[5]: 0;
+	char *dir_model;
 
-	char *dir_model = (argc > 6) ? argv[6] : 0;
+	if (0 == strcmp(argv[2], "test") || 0 == strcmp(argv[2], "demo"))
+		thresh = find_float_arg(argc, argv, "-thresh", .2);
+	if (0 == strcmp(argv[2], "train"))
+		dir_model = (argc > 6) ? argv[6] : 0;
 
-    int i;
-    for(i = 0; i < 20; ++i){
-        char buff[256];
-        sprintf(buff, "%s/../../data/labels/%s.png", weights, voc_names[i]);
-        voc_labels[i] = load_image_color(buff, 0, 0);
-    }
+    //int i;
+    //for(i = 0; i < 20; ++i){
+    //    char buff[256];
+    //    sprintf(buff, "%s/../../data/labels/%s.png", weights, voc_names[i]);
+    //    voc_labels[i] = load_image_color(buff, 0, 0);
+    //}
 
 	
 	if(0==strcmp(argv[2], "test")) test_yolo(cfg, weights, filename, thresh);
