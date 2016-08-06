@@ -14,6 +14,9 @@ extern int gpu_index;
 
 #ifdef WIN32
 #include <float.h>
+#ifdef INFINITY
+#undef INFINITY
+#endif
 #define INFINITY FLT_MAX 
 #endif
 
